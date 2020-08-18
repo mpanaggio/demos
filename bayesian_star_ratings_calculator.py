@@ -13,31 +13,30 @@ def bayesian_rating_calculator(quantile=0.5,a=np.zeros(5),prior_strength=1):
     xq=np.quantile(avg_ratings,quantile)
     return xq,avg_ratings.squeeze()
 
-def compare_ratings(percentile,a1,a2,prior_strength=1):
-    quantile=percentile/100
+def compare_ratings(threshold,a1,a2,prior_strength=1):
+    quantile=10/100
     np.random.seed(2)
     xq1,x1=bayesian_rating_calculator(quantile=quantile,a=a1,prior_strength=prior_strength)
     np.random.seed(2)
     xq2,x2=bayesian_rating_calculator(quantile=quantile,a=a2,prior_strength=prior_strength)
-    fig=plt.figure(figsize=(10,5))
+    fig=plt.figure(figsize=(8,5))
     ax=plt.gca()
     sns.kdeplot(x1,ax=ax,shade=True,alpha=0.3,color='#1f77b4',
-                label='product #1 \n 1 star: {} \n 2 star: {} \n 3 star: {} \n 4 star: {} \n 5 star: {}\n'.format(*a1))
+                label='product #1 \n 1 star: {} \n 2 star: {} \n 3 star: {} \n 4 star: {} \n 5 star: {}\n P(x>t)={}'.format(*a1,np.sum(x1>threshold)/len(x1)))
     sns.kdeplot(x2,ax=ax,shade=True,alpha=0.3,color='#ff7f0e',
-                label='product #1 \n 1 star: {} \n 2 star: {} \n 3 star: {} \n 4 star: {} \n 5 star: {}\n'.format(*a2))
-    ax.axvline(xq1,color='#1f77b4',label='{:d}th percentile \n product #1 \n {:.2f} stars \n'.format(int(quantile*100),xq1),linestyle='--')
-    ax.axvline(xq2,color='#ff7f0e',label='{:d}th percentile \n product #2 \n {:.2f} stars \n'.format(int(quantile*100),xq2),linestyle='--')
+                label='product #1 \n 1 star: {} \n 2 star: {} \n 3 star: {} \n 4 star: {} \n 5 star: {}\n P(x>t)={}'.format(*a2,np.sum(x2>threshold)/len(x2)))
+    ax.axvline(threshold,color='k',label='threshold',linestyle='--')
     ax.set_xlim(0,6)
     ax.set_xticks(range(1,6))
     ax.set_xlabel('star rating')
     ax.set_ylabel('posterior density')
     plt.legend(loc='upper left',bbox_to_anchor=(1,1.02))
     
-def cr2(percentile=10,prior_strength=1,product1_1star=0,product1_2star=0,
-    product1_3star=0,product1_4star=0,product1_5star=0,
+def cr2(threshold=3,prior_strength=1,product1_1star=0,product1_2star=0,
+    product1_3star=0,product1_4star=0,product1_5star=5,
     product2_1star=0,product2_2star=0,
-    product2_3star=0,product2_4star=0,product2_5star=0): 
-    return compare_ratings(percentile=percentile,
+    product2_3star=0,product2_4star=1,product2_5star=9): 
+    return compare_ratings(threshold=threshold,
                     prior_strength=prior_strength,
                     a1=np.array([product1_1star,product1_2star,
                                  product1_3star,product1_4star,product1_5star]),
@@ -45,7 +44,7 @@ def cr2(percentile=10,prior_strength=1,product1_1star=0,product1_2star=0,
                                  product2_3star,product2_4star,product2_5star])
                                         )
 interactive_plot = interactive(cr2, 
-                               percentile=(1,100),
+                               threshold=(1.0,5.0),
                                prior_strength=(0.01,100),
                                product1_1star=(0,100),
                                product1_2star=(0,100),
@@ -58,7 +57,7 @@ interactive_plot = interactive(cr2,
                                product2_4star=(0,100),
                                product2_5star=(0,100),
                               )
-label_dict={0:'rating percentile', 1: 'prior strength',
+label_dict={0:'threshold', 1: 'prior strength',
             2: '1 star ratings (#1)',
             3: '2 star ratings (#1)',
             4: '3 star ratings (#1)',
