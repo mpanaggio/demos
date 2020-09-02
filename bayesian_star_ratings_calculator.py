@@ -24,7 +24,7 @@ def compare_ratings(threshold,a1,a2,prior_strength=1):
     sns.kdeplot(x1,ax=ax,shade=True,alpha=0.3,color='#1f77b4',
                 label='product #1 \n 1 star: {} \n 2 star: {} \n 3 star: {} \n 4 star: {} \n 5 star: {}\n P(x>t)={}'.format(*a1,np.sum(x1>threshold)/len(x1)))
     sns.kdeplot(x2,ax=ax,shade=True,alpha=0.3,color='#ff7f0e',
-                label='product #1 \n 1 star: {} \n 2 star: {} \n 3 star: {} \n 4 star: {} \n 5 star: {}\n P(x>t)={}'.format(*a2,np.sum(x2>threshold)/len(x2)))
+                label='product #2 \n 1 star: {} \n 2 star: {} \n 3 star: {} \n 4 star: {} \n 5 star: {}\n P(x>t)={}'.format(*a2,np.sum(x2>threshold)/len(x2)))
     ax.axvline(threshold,color='k',label='threshold',linestyle='--')
     ax.set_xlim(0,6)
     ax.set_xticks(range(1,6))
